@@ -1,9 +1,7 @@
 package alumno.duoc.golden_cat_api.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @MappedSuperclass
 @Data // Genera getters, setters, toString, equals, hashCode y un constructor con los campos requeridos.

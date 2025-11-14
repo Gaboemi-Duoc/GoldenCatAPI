@@ -1,9 +1,7 @@
 package alumno.duoc.golden_cat_api.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "producto")
@@ -11,18 +9,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
-	@Id
-	private String id_producto;
+	@Id // Clave primaria
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // Auto incrementa el id
+	private Long id_producto;
 	@Column(nullable = false)
-	private String nom_producto; //nombre producto
+	private String nombre; //nombre producto
 	@Column(nullable = true)
-	private String descripcion_producto;
+	private String desc;
 	@Column(nullable = false)
-	private int precio;
+	private int price;
 	@Column(nullable = false)
 	private int stock;
 	@Column(nullable = false)
-	private String categoria;
+	private String cat;
 	@Column(nullable = true)
 	private float descuento;
 }

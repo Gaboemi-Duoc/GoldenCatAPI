@@ -1,5 +1,9 @@
 package alumno.duoc.golden_cat_api.repository;
 
-public interface ProductRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import alumno.duoc.golden_cat_api.model.Book;
+
+public interface ProductRepository extends JpaRepository<Book, Long> {
 
 }
