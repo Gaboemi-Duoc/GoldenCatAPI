@@ -1,4 +1,4 @@
-package duoc.nocodenolife.perfulandia.model;
+package alumno.duoc.golden_cat_api.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
