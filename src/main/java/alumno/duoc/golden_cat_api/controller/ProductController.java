@@ -46,9 +46,11 @@ public class ProductController {
         // Ajusta estos campos según tu clase Product
         product.setNombre(productDetails.getNombre());
         product.setPrice(productDetails.getPrice());
-        product.setDesc(productDetails.getDesc());
+        product.setDescription(productDetails.getDescription());
         product.setStock(productDetails.getStock());
         product.setCat(productDetails.getCat());
+        product.setDiscount(productDetails.getDiscount());
+        product.setDetail(productDetails.getDetail());
 
         return productRepository.save(product);
     }

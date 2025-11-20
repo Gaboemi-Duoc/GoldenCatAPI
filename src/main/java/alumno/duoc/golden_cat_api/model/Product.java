@@ -1,9 +1,11 @@
 package alumno.duoc.golden_cat_api.model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
-// @Table(name = "producto")
+@Table(name = "product")
 @Entity
 @Data
 @AllArgsConstructor
@@ -17,7 +19,7 @@ public class Product {
 	private String nombre; //nombre producto
 
 	@Column(nullable = true)
-	private String desc;
+	private String description;
 
 	@Column(nullable = false)
 	private int price;
@@ -27,7 +29,10 @@ public class Product {
 
 	@Column(nullable = false)
 	private String cat;
+
+	@Column(nullable = false)
+	private List<String> detail;
 	
 	@Column(nullable = true)
-	private float descuento;
+	private float discount;
 }

@@ -43,8 +43,8 @@ public class UsuarioController {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        usuario.setNombre(usuarioDetails.getNombre());
-        usuario.setCorreo_user(usuarioDetails.getCorreo_user());
+        usuario.setUsername(usuarioDetails.getUsername());
+        usuario.setEmail(usuarioDetails.getEmail());
         usuario.setClave(usuarioDetails.getClave());
 
         return usuarioRepository.save(usuario);
