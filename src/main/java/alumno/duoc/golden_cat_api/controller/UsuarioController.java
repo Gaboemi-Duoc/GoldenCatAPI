@@ -1,17 +1,27 @@
 package alumno.duoc.golden_cat_api.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+import alumno.duoc.golden_cat_api.model.LoginRequest;
 import alumno.duoc.golden_cat_api.model.Usuario;
 import alumno.duoc.golden_cat_api.repository.UsuarioRepository;
+import alumno.duoc.golden_cat_api.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/api/usuario")
 @CrossOrigin(origins = "*")
 public class UsuarioController {
 
+    @Autowired
     private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private AuthService authService;
 
     // Inyección por constructor
     public UsuarioController(UsuarioRepository usuarioRepository) {
@@ -33,8 +43,19 @@ public class UsuarioController {
 
     // Crear un nuevo usuario
     @PostMapping
+    @Operation(summary = "Registrar Nuevo Usuario", description = "Registra un nuevo Usuario, y lo retorna de vuelta")
     public Usuario createUsuario(@RequestBody Usuario usuario) {
         return usuarioRepository.save(usuario);
+    }
+
+    @PostMapping("/api/login")
+    @Operation(summary = "Login por Username", description = "Retorna un Usuario por nombre de usuario, habiendo ingresado su clave")
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        if (authService.authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {
+            return ResponseEntity.ok("Login successful!");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials.");
+        }
     }
 
     // Actualizar usuario existente
