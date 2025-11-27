@@ -48,7 +48,7 @@ public class UsuarioController {
         return usuarioRepository.save(usuario);
     }
 
-    @PostMapping("/api/login")
+    @PostMapping("/login")
     @Operation(summary = "Login por Username", description = "Retorna un Usuario por nombre de usuario, habiendo ingresado su clave")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         if (authService.authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {

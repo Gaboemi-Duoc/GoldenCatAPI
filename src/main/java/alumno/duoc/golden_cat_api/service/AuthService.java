@@ -1,21 +1,27 @@
 package alumno.duoc.golden_cat_api.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import alumno.duoc.golden_cat_api.model.Usuario;
 import alumno.duoc.golden_cat_api.repository.UsuarioRepository;
 
 @Service
 public class AuthService {
     @Autowired
     private UsuarioRepository usuarioRepository;
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder; // Add Spring Security dependency for this
 
     public boolean authenticate(String username, String password) {
-        return usuarioRepository.findByUsername(username)
-                .map(user -> passwordEncoder.matches(password, user.getClave()))
-                .orElse(false);
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
+        
+        if (usuarioOpt.isEmpty()) {
+            return false;
+        }
+        
+        Usuario usuario = usuarioOpt.get();
+        
+        return password.equals(usuario.getClave());
     }
 }
