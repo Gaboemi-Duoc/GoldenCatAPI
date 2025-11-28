@@ -11,7 +11,7 @@ import alumno.duoc.golden_cat_api.model.Usuario;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
-	@Query(value = "SELECT e FROM Empleado e WHERE e.username = :nombreuser", nativeQuery = true)
-	Optional<Usuario> findByUsername(String nombreuser);
+    @Query(value = "SELECT * FROM usuario WHERE username = :nombreuser", nativeQuery = true)
+    Optional<Usuario> findByUsername(String nombreuser);
 
 }
