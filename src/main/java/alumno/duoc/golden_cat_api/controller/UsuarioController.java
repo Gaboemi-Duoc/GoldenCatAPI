@@ -25,7 +25,6 @@ public class UsuarioController {
     private AuthService authService;
 
     // Inyección por constructor
-    @Operation(summary = "Crea un Usuario", description = "Inyecta un nuevo Usuario por construccion a la Base de Datos.")
     public UsuarioController(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
