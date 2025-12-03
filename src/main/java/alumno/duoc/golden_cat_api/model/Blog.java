@@ -1,6 +1,8 @@
 package alumno.duoc.golden_cat_api.model;
 import lombok.*;
 
+@Table(name = "blog")
+@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
