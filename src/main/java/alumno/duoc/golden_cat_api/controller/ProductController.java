@@ -9,6 +9,7 @@ import alumno.duoc.golden_cat_api.repository.ProductRepository;
 @RestController
 @RequestMapping("/api/product")
 @CrossOrigin(origins = "*") // Permitir frontend
+@Tag(name = "Product Controller", description = "API para gestionar operaciones CRUD de productos")
 public class ProductController {
 
     private final ProductRepository productRepository;
