@@ -5,6 +5,7 @@ import java.util.List;
 
 import alumno.duoc.golden_cat_api.model.Product;
 import alumno.duoc.golden_cat_api.repository.ProductRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/product")
