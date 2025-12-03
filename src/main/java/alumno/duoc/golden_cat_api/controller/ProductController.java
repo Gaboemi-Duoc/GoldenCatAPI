@@ -5,11 +5,11 @@ import java.util.List;
 
 import alumno.duoc.golden_cat_api.model.Product;
 import alumno.duoc.golden_cat_api.repository.ProductRepository;
-import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/api/product")
 @CrossOrigin(origins = "*") // Permitir frontend
+@Tag(name = "Product Controller", description = "API para gestionar operaciones CRUD de productos")
 public class ProductController {
 
     private final ProductRepository productRepository;

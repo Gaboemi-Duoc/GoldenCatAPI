@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import alumno.duoc.golden_cat_api.model.Blog;
 
 @Repository
-public class BlogRepository extends JpaRepository<Blog, Long> {
+public interface BlogRepository extends JpaRepository<Blog, Long> {
 
 }
