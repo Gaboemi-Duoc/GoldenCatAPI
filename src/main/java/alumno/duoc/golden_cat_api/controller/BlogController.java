@@ -14,7 +14,6 @@ import alumno.duoc.golden_cat_api.repository.BlogRepository;
 @RestController
 @RequestMapping("/api/blog")
 @CrossOrigin(origins = "*")
-@Tag(name = "Blog Controller", description = "API para gestionar operaciones CRUD de blogs")
 public class BlogController {
 
     @Autowired

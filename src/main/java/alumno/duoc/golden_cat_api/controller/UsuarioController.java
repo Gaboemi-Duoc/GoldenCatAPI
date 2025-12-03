@@ -10,13 +10,10 @@ import alumno.duoc.golden_cat_api.model.LoginRequest;
 import alumno.duoc.golden_cat_api.model.Usuario;
 import alumno.duoc.golden_cat_api.repository.UsuarioRepository;
 import alumno.duoc.golden_cat_api.service.AuthService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/api/usuario")
-@CrossOrigin(origins = "*")
-@Tag(name = "Blog Controller", description = "API para gestionar operaciones CRUD de usuarios")
 public class UsuarioController {
 
     @Autowired
