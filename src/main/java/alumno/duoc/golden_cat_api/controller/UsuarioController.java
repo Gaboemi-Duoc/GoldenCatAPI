@@ -44,6 +44,14 @@ public class UsuarioController {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
+    // Obtener usuario por ID
+    @GetMapping("/username/{username}")
+    @Operation(summary = "Obtener usuario por ID", description = "Retorna un Usuario a partir de una Username dada.")
+    public Usuario getUsuarioById(@PathVariable String username) {
+        return usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
     // Crear un nuevo usuario
     @PostMapping
     @Operation(summary = "Registrar Nuevo Usuario", description = "Registra un nuevo Usuario, y lo retorna de vuelta.")
