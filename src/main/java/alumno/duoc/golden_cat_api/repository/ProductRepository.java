@@ -11,7 +11,7 @@ import alumno.duoc.golden_cat_api.model.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query("SELECT * FROM product WHERE cat = :category")
+    @Query("SELECT p FROM product p WHERE p.cat = :category")
     List<Product> findByCat(String category);
     
     @Query("SELECT DISTINCT p.cat FROM product p")
