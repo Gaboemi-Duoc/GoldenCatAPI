@@ -1,10 +1,6 @@
 package alumno.duoc.golden_cat_api.model;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.util.List;
-import java.util.Map;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,12 +30,8 @@ public class Product {
 	@Column(nullable = false)
 	private String cat;
 
-	@Column(nullable = true) // Changed from nullable = false
-    private List<String> detail;
-
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(columnDefinition = "jsonb", nullable = true)
-	private Map<String, String> details;
+	@Column(nullable = false)
+	private List<String> detail;
 	
 	@Column(nullable = true)
 	private float discount;
