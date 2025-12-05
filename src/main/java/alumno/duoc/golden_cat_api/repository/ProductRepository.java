@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import alumno.duoc.golden_cat_api.model.Product;
@@ -11,15 +12,15 @@ import alumno.duoc.golden_cat_api.model.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query("SELECT p FROM product p WHERE p.cat = :category")
-    List<Product> findByCat(String category);
+    @Query(value = "SELECT * FROM product WHERE cat = :category", nativeQuery = true)
+    List<Product> findByCat(@Param("category") String category);
     
-    @Query("SELECT DISTINCT p.cat FROM product p")
+    @Query(value = "SELECT DISTINCT cat FROM product", nativeQuery = true)
     List<String> findAllCategories();
     
-    List<Product> findByStockLessThan(int threshold);
+    List<Product> findByStockLessThan(int stock);
     
-    @Query("SELECT COUNT(p) FROM product p WHERE p.discount > 0")
+    @Query(value = "SELECT COUNT(*) FROM product WHERE discount > 0", nativeQuery = true)
     long countDiscountedProducts();
-    
+
 }
