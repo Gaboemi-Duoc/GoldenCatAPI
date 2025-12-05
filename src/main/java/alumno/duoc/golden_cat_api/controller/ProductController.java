@@ -53,7 +53,7 @@ public class ProductController {
         product.setStock(productDetails.getStock());
         product.setCat(productDetails.getCat());
         product.setDiscount(productDetails.getDiscount());
-        product.setDetails(productDetails.getDetails());
+        product.setDetail(productDetails.getDetail());
 
         return productRepository.save(product);
     }
