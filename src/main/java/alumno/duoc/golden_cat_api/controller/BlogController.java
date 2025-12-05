@@ -56,6 +56,7 @@ public class BlogController {
     )
     public ResponseEntity<Blog> createBlog(@RequestBody Blog blog) {
         Blog savedBlog = blogRepository.save(blog);
+        savedBlog.setId_blog(null);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBlog);
     }
 

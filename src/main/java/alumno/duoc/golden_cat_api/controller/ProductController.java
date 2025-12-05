@@ -36,6 +36,7 @@ public class ProductController {
     // Crear un nuevo producto
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
+        product.setId_producto(null);
         return productRepository.save(product);
     }
 
@@ -52,7 +53,19 @@ public class ProductController {
         product.setStock(productDetails.getStock());
         product.setCat(productDetails.getCat());
         product.setDiscount(productDetails.getDiscount());
-        product.setDetail(productDetails.getDetail());
+        product.setDetails(productDetails.getDetails());
+
+        return productRepository.save(product);
+    }
+
+    // Actualizar producto existente
+    @PutMapping("/ofertas/{id}")
+    public Product ofertaProduct(@PathVariable Long id, @RequestAttribute Float newDiscount) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        // Ajusta estos campos según tu clase Product
+        product.setDiscount(newDiscount);
 
         return productRepository.save(product);
     }

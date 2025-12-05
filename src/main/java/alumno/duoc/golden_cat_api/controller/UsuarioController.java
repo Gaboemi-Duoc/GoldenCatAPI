@@ -46,9 +46,16 @@ public class UsuarioController {
 
     // Obtener usuario por ID
     @GetMapping("/username/{username}")
-    @Operation(summary = "Obtener usuario por ID", description = "Retorna un Usuario a partir de una Username dada.")
+    @Operation(summary = "Obtener usuario por Username", description = "Retorna un Usuario a partir de una Username dada.")
     public Usuario getUsuarioById(@PathVariable String username) {
         return usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @GetMapping("/email/{email}")
+    @Operation(summary = "Obtener usuario por Email", description = "Retorna un Usuario a partir de un Email dado.")
+    public Usuario getUsuarioByEmail(@PathVariable String email) {
+        return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
@@ -56,6 +63,7 @@ public class UsuarioController {
     @PostMapping
     @Operation(summary = "Registrar Nuevo Usuario", description = "Registra un nuevo Usuario, y lo retorna de vuelta.")
     public Usuario createUsuario(@RequestBody Usuario usuario) {
+        usuario.setId_user(null);
         return usuarioRepository.save(usuario);
     }
 
