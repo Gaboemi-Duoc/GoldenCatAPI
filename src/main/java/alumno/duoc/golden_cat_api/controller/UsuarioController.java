@@ -97,4 +97,5 @@ public class UsuarioController {
     public void deleteUsuario(@PathVariable int id) {
         usuarioRepository.deleteById(id);
     }
+    
 }
