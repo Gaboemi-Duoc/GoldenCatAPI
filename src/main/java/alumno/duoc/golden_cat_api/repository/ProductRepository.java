@@ -21,4 +21,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     
     @Query("SELECT COUNT(p) FROM product p WHERE p.discount > 0")
     long countDiscountedProducts();
+    
 }
