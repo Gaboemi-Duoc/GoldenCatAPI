@@ -2,7 +2,6 @@ package alumno.duoc.golden_cat_api.controller;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Optional;
 
 import alumno.duoc.golden_cat_api.model.Pedido;
 import alumno.duoc.golden_cat_api.model.PedidoItems;
