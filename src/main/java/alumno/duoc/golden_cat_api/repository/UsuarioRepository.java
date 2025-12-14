@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import alumno.duoc.golden_cat_api.model.Usuario;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query(value = "SELECT * FROM app_user WHERE username = :nombreuser", nativeQuery = true)
     Optional<Usuario> findByUsername(String nombreuser);

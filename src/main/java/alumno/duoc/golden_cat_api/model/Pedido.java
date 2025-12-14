@@ -12,13 +12,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Orden {
+public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_order;
     
     @Column(nullable = false)
-    private LocalDateTime orderDate;
+    private LocalDateTime pedidoDate;
     
     @Column(nullable = false, length = 20)
     private String status; // "pending", "processing", "shipped", "delivered", "cancelled"
@@ -39,7 +39,7 @@ public class Orden {
     
     // Relación One-to-Many con OrderItem
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>();
+    private List<OrderArc> items = new ArrayList<>();
     
     // Método para calcular el total
     public void calculateTotal() {
@@ -55,8 +55,8 @@ public class Orden {
     // Método para establecer fecha automáticamente antes de persistir
     @PrePersist
     protected void onCreate() {
-        if (orderDate == null) {
-            orderDate = LocalDateTime.now();
+        if (pedidoDate == null) {
+            pedidoDate = LocalDateTime.now();
         }
         if (status == null) {
             status = "pending";

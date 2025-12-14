@@ -8,7 +8,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderItem {
+public class PedidoItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_order_item")
@@ -23,7 +23,7 @@ public class OrderItem {
     // Relación Many-to-One con Order
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    private Pedido pedido;
     
     // Relación Many-to-One con Product
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,7 +31,7 @@ public class OrderItem {
     private Product product;
     
     // Constructor para facilitar creación
-    public OrderItem(Product product, Integer quantity) {
+    public PedidoItems(Product product, Integer quantity) {
         this.product = product;
         this.quantity = quantity;
         this.priceAtPurchase = product.getPrice();

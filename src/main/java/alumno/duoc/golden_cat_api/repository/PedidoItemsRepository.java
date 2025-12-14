@@ -1,6 +1,6 @@
 package alumno.duoc.golden_cat_api.repository;
 
-import alumno.duoc.golden_cat_api.model.OrderItem;
+import alumno.duoc.golden_cat_api.model.OrderArc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,15 +9,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrdenarcRepository extends JpaRepository<OrderItem, Long> {
+public interface OrdenarcRepository extends JpaRepository<OrderArc, Long> {
     
     // Obtener items por pedido
     @Query("SELECT oi FROM OrderItem oi WHERE oi.order.id_order = :orderId")
-    List<OrderItem> findByOrderId(@Param("orderId") Long orderId);
+    List<OrderArc> findByOrderId(@Param("orderId") Long orderId);
     
     // Obtener items por producto
     @Query("SELECT oi FROM OrderItem oi WHERE oi.product.id_producto = :productId")
-    List<OrderItem> findByProductId(@Param("productId") Long productId);
+    List<OrderArc> findByProductId(@Param("productId") Long productId);
     
     // Contar cuántas veces se ha vendido un producto
     @Query("SELECT SUM(oi.quantity) FROM OrderItem oi WHERE oi.product.id_producto = :productId")

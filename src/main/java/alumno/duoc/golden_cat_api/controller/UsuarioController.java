@@ -39,7 +39,7 @@ public class UsuarioController {
     // Obtener usuario por ID
     @GetMapping("/{id}")
     @Operation(summary = "Obtener usuario por ID", description = "Retorna un Usuario a partir de una ID dada.")
-    public Usuario getUsuarioById(@PathVariable int id) {
+    public Usuario getUsuarioById(@PathVariable Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
@@ -80,7 +80,7 @@ public class UsuarioController {
     // Actualizar usuario existente
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar Usuario", description = "Actualiza la informacion de un Usuario con una ID dada.")
-    public Usuario updateUsuario(@PathVariable int id, @RequestBody Usuario usuarioDetails) {
+    public Usuario updateUsuario(@PathVariable Long id, @RequestBody Usuario usuarioDetails) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -94,7 +94,7 @@ public class UsuarioController {
     // Eliminar usuario
     @DeleteMapping("/{id}")
     @Operation(summary = "Elimainar Usuario", description = "Elimina un Usuario de la Base de Datos con una ID dada.")
-    public void deleteUsuario(@PathVariable int id) {
+    public void deleteUsuario(@PathVariable Long id) {
         usuarioRepository.deleteById(id);
     }
     
