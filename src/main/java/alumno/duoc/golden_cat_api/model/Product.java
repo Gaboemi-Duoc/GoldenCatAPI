@@ -1,9 +1,10 @@
 package alumno.duoc.golden_cat_api.model;
 
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "product")
 @Entity
@@ -11,28 +12,62 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
-	@Id // Clave primaria
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // Auto incrementa el id
-	private Long id_producto;
-
-	@Column(nullable = false)
-	private String nombre; //nombre producto
-
-	@Column(nullable = true)
-	private String description;
-
-	@Column(nullable = false)
-	private int price;
-
-	@Column(nullable = false)
-	private int stock;
-
-	@Column(nullable = false)
-	private String cat;
-
-	@Column(nullable = false)
-	private List<String> detail;
-	
-	@Column(nullable = true)
-	private float discount;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_producto")
+    private Long id_producto;
+    
+    @Column(name = "nombre", nullable = false)
+    private String nombre;
+    
+    @Column(name = "description")
+    private String description;
+    
+    @Column(name = "price", nullable = false)
+    private Integer price;
+    
+    @Column(name = "stock", nullable = false)
+    private Integer stock;
+    
+    @Column(name = "cat", nullable = false)
+    private String cat;
+    
+    // Para PostgreSQL array - usar columna simple
+    @Column(name = "detail", columnDefinition = "TEXT")
+    private String detail; // Guardar como string separado por comas
+    
+    @Column(name = "discount")
+    private Float discount;
+    
+    @Column(name = "details", columnDefinition = "TEXT")
+    private String details; // Guardar JSON como string
+    
+    // Método para obtener detail como lista
+    public List<String> getDetailList() {
+        if (detail == null || detail.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return List.of(detail.split(","));
+    }
+    
+    // Método para establecer detail desde lista
+    public void setDetailList(List<String> details) {
+        if (details == null || details.isEmpty()) {
+            this.detail = "";
+        } else {
+            this.detail = String.join(",", details);
+        }
+    }
+    
+    // Métodos de negocio
+    public boolean isAvailable() {
+        return stock > 0;
+    }
+    
+    public Integer getDiscountedPrice() {
+        if (discount != null && discount > 0) {
+            return price - (int)(price * (discount / 100.0));
+        }
+        return price;
+    }
 }
