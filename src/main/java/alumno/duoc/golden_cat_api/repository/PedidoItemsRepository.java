@@ -12,19 +12,19 @@ import java.util.List;
 public interface PedidoItemsRepository extends JpaRepository<PedidoItems, Long> {
     
     // Obtener items por pedido
-    @Query("SELECT oi FROM OrderItem oi WHERE oi.order.id_order = :orderId")
-    List<PedidoItems> findByOrderId(@Param("orderId") Long orderId);
+    @Query("SELECT oi FROM pedido_items oi WHERE oi.pedido.id_pedido = :pedidoId")
+    List<PedidoItems> findByPedidoId(@Param("pedidoId") Long pedidoId);
     
     // Obtener items por producto
-    @Query("SELECT oi FROM OrderItem oi WHERE oi.product.id_producto = :productId")
+    @Query("SELECT oi FROM pedido_items oi WHERE oi.product.id_producto = :productId")
     List<PedidoItems> findByProductId(@Param("productId") Long productId);
     
     // Contar cuántas veces se ha vendido un producto
-    @Query("SELECT SUM(oi.quantity) FROM OrderItem oi WHERE oi.product.id_producto = :productId")
+    @Query("SELECT SUM(oi.quantity) FROM pedido_items oi WHERE oi.product.id_producto = :productId")
     Integer countSalesByProductId(@Param("productId") Long productId);
     
     // Obtener los productos más vendidos
     @Query("SELECT oi.product.id_producto, SUM(oi.quantity) as totalQuantity " +
-           "FROM OrderItem oi GROUP BY oi.product.id_producto ORDER BY totalQuantity DESC")
+           "FROM pedido_items oi GROUP BY oi.product.id_producto ORDER BY totalQuantity DESC")
     List<Object[]> findTopSellingProducts();
 }
