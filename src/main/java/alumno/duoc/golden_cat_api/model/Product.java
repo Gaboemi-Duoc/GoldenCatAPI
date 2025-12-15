@@ -31,9 +31,8 @@ public class Product {
     @Column(name = "cat", nullable = false)
     private String cat;
     
-    // Para PostgreSQL array - usar columna simple
     @Column(name = "detail", columnDefinition = "TEXT")
-    private String detail; // Guardar como string separado por comas
+    private String detail;
     
     @Column(name = "discount")
     private Float discount;
