@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table(name = "orders")
+@Table(name = "pedido")
 @Entity
 @Data
 @AllArgsConstructor
@@ -15,7 +15,7 @@ import java.util.List;
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_order;
+    private Long id_pedido;
     
     @Column(nullable = false)
     private LocalDateTime pedidoDate;
@@ -34,12 +34,12 @@ public class Pedido {
     
     // Relación Many-to-One con Usuario
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "id_user", nullable = false)
     private Usuario user;
     
     // Relación One-to-Many con OrderItem
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderArc> items = new ArrayList<>();
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PedidoItems> items = new ArrayList<>();
     
     // Método para calcular el total
     public void calculateTotal() {

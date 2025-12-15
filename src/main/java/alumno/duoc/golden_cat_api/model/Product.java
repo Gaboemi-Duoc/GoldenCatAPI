@@ -14,7 +14,6 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_producto")
     private Long id_producto;
     
     @Column(name = "nombre", nullable = false)
@@ -39,24 +38,12 @@ public class Product {
     @Column(name = "discount")
     private Float discount;
     
-    @Column(name = "details", columnDefinition = "TEXT")
-    private String details; // Guardar JSON como string
-    
     // Método para obtener detail como lista
     public List<String> getDetailList() {
         if (detail == null || detail.isEmpty()) {
             return new ArrayList<>();
         }
         return List.of(detail.split(","));
-    }
-    
-    // Método para establecer detail desde lista
-    public void setDetailList(List<String> details) {
-        if (details == null || details.isEmpty()) {
-            this.detail = "";
-        } else {
-            this.detail = String.join(",", details);
-        }
     }
     
     // Métodos de negocio
