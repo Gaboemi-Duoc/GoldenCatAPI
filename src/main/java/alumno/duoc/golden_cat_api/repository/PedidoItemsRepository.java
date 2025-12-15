@@ -12,7 +12,8 @@ import java.util.List;
 public interface PedidoItemsRepository extends JpaRepository<PedidoItems, Long> {
     
     // Obtener items por pedido
-    List<PedidoItems> findByPedidoId_pedido(Long pedidoId);
+    @Query("SELECT pi FROM PedidoItems pi WHERE pi.pedido.id_pedido = :pedidoId")
+    List<PedidoItems> findByPedidoId(@Param("pedidoId") Long pedidoId);
     
     // Obtener items por producto
     @Query("SELECT oi FROM pedido_items oi WHERE oi.product.id_producto = :productId")
