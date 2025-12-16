@@ -166,7 +166,7 @@ public class PedidoController {
         }
     }
 
-    // Obtener pedidos por usuario - ¡ESTO ES LO QUE ESTÁ CAUSANDO EL ERROR!
+    // Obtener pedidos por usuario
     @GetMapping("/usuario/{usuarioId}")
     @Operation(summary = "Obtener pedidos por usuario", description = "Retorna todos los pedidos de un usuario específico")
     public ResponseEntity<?> getPedidosByUsuario(@PathVariable Long usuarioId) {
@@ -182,12 +182,7 @@ public class PedidoController {
             
             // Convertir a DTOs para evitar referencias circulares
             List<PedidoDTO> pedidosDTO = pedidos.stream()
-                .map(pedido -> {
-                    PedidoDTO dto = new PedidoDTO(pedido);
-                    // Opcional: cargar solo la información básica de items si es necesario
-                    // dto.setItems(getItemsBasicosParaPedido(pedido.getId_pedido()));
-                    return dto;
-                })
+                .map(this::convertToDTO) 
                 .collect(Collectors.toList());
             
             return ResponseEntity.ok(pedidosDTO);
