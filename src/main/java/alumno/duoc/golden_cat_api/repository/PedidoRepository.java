@@ -1,33 +1,28 @@
 package alumno.duoc.golden_cat_api.repository;
 
-import alumno.duoc.golden_cat_api.model.Pedido;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import alumno.duoc.golden_cat_api.model.Pedido;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
-
-    // Obtener pedidos por usuario
-    @Query("SELECT o FROM Pedido o WHERE o.user.id_user = :userId")
-    List<Pedido> findByUserId(@Param("userId") Long userId);
-
-    // Obtener pedidos por estado
-    List<Pedido> findByStatus(String status);
-
-    // Obtener pedidos por rango de fechas
-    @Query("SELECT o FROM Pedido o WHERE o.pedidoDate BETWEEN :startDate AND :endDate")
-    List<Pedido> findByPedidoDateBetween(@Param("startDate") java.time.LocalDateTime startDate,
-            @Param("endDate") java.time.LocalDateTime endDate);
-
-    // Contar pedidos por usuario
-    @Query("SELECT COUNT(o) FROM Pedido o WHERE o.user.id_user = :userId")
-    Long countByUserId(@Param("userId") Long userId);
-
-    // Obtener pedidos con total mayor a un valor
-    @Query("SELECT o FROM Pedido o WHERE o.totalAmount > :minAmount")
-    List<Pedido> findByTotalAmountGreaterThan(@Param("minAmount") Integer minAmount);
+    
+    // Find all pedidos by usuario ID
+    @Query(value = "SELECT * FROM pedido WHERE usuario_id = :usuarioId ORDER BY fecha_creacion DESC", nativeQuery = true)
+    List<Pedido> findByUsuarioId(@Param("usuarioId") Long usuarioId);
+    
+    // Find pedidos by estado
+    List<Pedido> findByEstado(String estado);
+    
+    // Find pedidos within a date range
+    @Query(value = "SELECT * FROM pedido WHERE fecha_creacion BETWEEN :startDate AND :endDate", nativeQuery = true)
+    List<Pedido> findPedidosByDateRange(@Param("startDate") String startDate, @Param("endDate") String endDate);
+    
+    // Count pedidos by usuario
+    @Query(value = "SELECT COUNT(*) FROM pedido WHERE usuario_id = :usuarioId", nativeQuery = true)
+    long countByUsuarioId(@Param("usuarioId") Long usuarioId);
 }
