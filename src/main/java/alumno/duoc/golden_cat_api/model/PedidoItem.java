@@ -1,5 +1,7 @@
 package alumno.duoc.golden_cat_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +18,7 @@ public class PedidoItem {
     // Reference to Pedido
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pedido_id", nullable = false)
+    @JsonIgnore
     private Pedido pedido;
     
     // Reference to Product by ID only (no duplicate data)

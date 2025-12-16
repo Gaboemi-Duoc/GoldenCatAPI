@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import alumno.duoc.golden_cat_api.model.Pedido;
 import alumno.duoc.golden_cat_api.model.PedidoItem;
 import alumno.duoc.golden_cat_api.model.Product;
@@ -21,7 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/pedidos")
-@CrossOrigin(origins = "*") // Permitir frontend
+@CrossOrigin(origins = "*")
 @Tag(name = "Pedido Controller", description = "API para gestionar pedidos de usuarios")
 public class PedidoController {
 
@@ -30,7 +32,6 @@ public class PedidoController {
     private final ProductRepository productRepository;
     private final UsuarioRepository usuarioRepository;
 
-    // Inyección por constructor
     public PedidoController(PedidoRepository pedidoRepository,
                           PedidoItemRepository pedidoItemRepository,
                           ProductRepository productRepository,
@@ -41,48 +42,179 @@ public class PedidoController {
         this.usuarioRepository = usuarioRepository;
     }
 
+    // DTO para evitar referencias circulares
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class PedidoDTO {
+        private Long id_pedido;
+        private String fechaCreacion;
+        private String estado;
+        private Integer total;
+        private String direccionEnvio;
+        private Long usuarioId;
+        private List<PedidoItemDTO> items;
+        
+        // Constructor from Pedido entity
+        public PedidoDTO(Pedido pedido) {
+            this.id_pedido = pedido.getId_pedido();
+            this.fechaCreacion = pedido.getFechaCreacion().toString();
+            this.estado = pedido.getEstado();
+            this.total = pedido.getTotal();
+            this.direccionEnvio = pedido.getDireccionEnvio();
+            this.usuarioId = pedido.getUsuarioId();
+        }
+        
+        // Getters y setters
+        public Long getId_pedido() { return id_pedido; }
+        public void setId_pedido(Long id_pedido) { this.id_pedido = id_pedido; }
+        
+        public String getFechaCreacion() { return fechaCreacion; }
+        public void setFechaCreacion(String fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+        
+        public String getEstado() { return estado; }
+        public void setEstado(String estado) { this.estado = estado; }
+        
+        public Integer getTotal() { return total; }
+        public void setTotal(Integer total) { this.total = total; }
+        
+        public String getDireccionEnvio() { return direccionEnvio; }
+        public void setDireccionEnvio(String direccionEnvio) { this.direccionEnvio = direccionEnvio; }
+        
+        public Long getUsuarioId() { return usuarioId; }
+        public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
+        
+        public List<PedidoItemDTO> getItems() { return items; }
+        public void setItems(List<PedidoItemDTO> items) { this.items = items; }
+    }
+    
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class PedidoItemDTO {
+        private Long id_item;
+        private Long productoId;
+        private String productoNombre;
+        private Integer cantidad;
+        private Integer precioUnitario;
+        private Integer subtotal;
+        
+        // Constructor from PedidoItem entity
+        public PedidoItemDTO(PedidoItem item) {
+            this.id_item = item.getId_item();
+            this.productoId = item.getProductoId();
+            this.cantidad = item.getCantidad();
+            this.precioUnitario = item.getPrecioUnitario();
+            this.subtotal = item.getSubtotal();
+        }
+        
+        // Getters y setters
+        public Long getId_item() { return id_item; }
+        public void setId_item(Long id_item) { this.id_item = id_item; }
+        
+        public Long getProductoId() { return productoId; }
+        public void setProductoId(Long productoId) { this.productoId = productoId; }
+        
+        public String getProductoNombre() { return productoNombre; }
+        public void setProductoNombre(String productoNombre) { this.productoNombre = productoNombre; }
+        
+        public Integer getCantidad() { return cantidad; }
+        public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+        
+        public Integer getPrecioUnitario() { return precioUnitario; }
+        public void setPrecioUnitario(Integer precioUnitario) { this.precioUnitario = precioUnitario; }
+        
+        public Integer getSubtotal() { return subtotal; }
+        public void setSubtotal(Integer subtotal) { this.subtotal = subtotal; }
+    }
+
     // Obtener todos los pedidos
     @GetMapping
     @Operation(summary = "Obtener todos los pedidos", description = "Retorna una lista de todos los pedidos")
-    public List<Pedido> getAllPedidos() {
-        return pedidoRepository.findAll();
+    public ResponseEntity<?> getAllPedidos() {
+        try {
+            List<Pedido> pedidos = pedidoRepository.findAll();
+            List<PedidoDTO> pedidosDTO = pedidos.stream()
+                .map(pedido -> {
+                    PedidoDTO dto = new PedidoDTO(pedido);
+                    // No cargar items aquí para mejor performance
+                    return dto;
+                })
+                .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(pedidosDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al obtener pedidos: " + e.getMessage()));
+        }
     }
 
     // Obtener pedido por ID
     @GetMapping("/{id}")
     @Operation(summary = "Obtener pedido por ID", description = "Retorna un pedido específico por su ID")
     public ResponseEntity<?> getPedidoById(@PathVariable Long id) {
-        Optional<Pedido> pedido = pedidoRepository.findById(id);
-        if (pedido.isPresent()) {
-            return ResponseEntity.ok(pedido.get());
+        try {
+            Optional<Pedido> pedidoOpt = pedidoRepository.findById(id);
+            if (!pedidoOpt.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Pedido no encontrado"));
+            }
+            
+            Pedido pedido = pedidoOpt.get();
+            PedidoDTO pedidoDTO = convertToDTO(pedido);
+            
+            return ResponseEntity.ok(pedidoDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al obtener pedido: " + e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", "Pedido no encontrado"));
     }
 
-    // Obtener pedidos por usuario
+    // Obtener pedidos por usuario - ¡ESTO ES LO QUE ESTÁ CAUSANDO EL ERROR!
     @GetMapping("/usuario/{usuarioId}")
     @Operation(summary = "Obtener pedidos por usuario", description = "Retorna todos los pedidos de un usuario específico")
     public ResponseEntity<?> getPedidosByUsuario(@PathVariable Long usuarioId) {
-        // Verificar que el usuario existe
-        Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
-        if (!usuario.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Usuario no encontrado"));
+        try {
+            // Verificar que el usuario existe
+            Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
+            if (!usuario.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Usuario no encontrado"));
+            }
+            
+            List<Pedido> pedidos = pedidoRepository.findByUsuarioId(usuarioId);
+            
+            // Convertir a DTOs para evitar referencias circulares
+            List<PedidoDTO> pedidosDTO = pedidos.stream()
+                .map(pedido -> {
+                    PedidoDTO dto = new PedidoDTO(pedido);
+                    // Opcional: cargar solo la información básica de items si es necesario
+                    // dto.setItems(getItemsBasicosParaPedido(pedido.getId_pedido()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(pedidosDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al obtener pedidos por usuario: " + e.getMessage(),
+                                 "detalle", e.toString()));
         }
-        
-        List<Pedido> pedidos = pedidoRepository.findByUsuarioId(usuarioId);
-        return ResponseEntity.ok(pedidos);
     }
 
     // Obtener pedidos por estado
     @GetMapping("/estado/{estado}")
     @Operation(summary = "Obtener pedidos por estado", description = "Retorna pedidos filtrados por estado")
-    public List<Pedido> getPedidosByEstado(@PathVariable String estado) {
-        return pedidoRepository.findByEstado(estado);
+    public ResponseEntity<?> getPedidosByEstado(@PathVariable String estado) {
+        try {
+            List<Pedido> pedidos = pedidoRepository.findByEstado(estado);
+            List<PedidoDTO> pedidosDTO = pedidos.stream()
+                .map(PedidoDTO::new)
+                .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(pedidosDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al obtener pedidos por estado: " + e.getMessage()));
+        }
     }
 
-    // Crear un nuevo pedido
     @PostMapping
     @Operation(summary = "Crear nuevo pedido", description = "Crea un nuevo pedido con sus items")
     public ResponseEntity<?> createPedido(@RequestBody Map<String, Object> pedidoData) {
@@ -131,10 +263,6 @@ public class PedidoController {
                 Integer precioUnitario = product.getDiscountedPrice();
                 Integer subtotal = precioUnitario * cantidad;
                 total += subtotal;
-                
-                // Reducir stock
-                product.setStock(product.getStock() - cantidad);
-                productRepository.save(product);
             }
             
             pedido.setTotal(total);
@@ -149,6 +277,10 @@ public class PedidoController {
                 Integer precioUnitario = product.getDiscountedPrice();
                 Integer subtotal = precioUnitario * cantidad;
                 
+                // Reducir stock
+                product.setStock(product.getStock() - cantidad);
+                productRepository.save(product);
+                
                 PedidoItem pedidoItem = new PedidoItem();
                 pedidoItem.setPedido(savedPedido);
                 pedidoItem.setProductoId(productoId);
@@ -159,13 +291,13 @@ public class PedidoController {
                 pedidoItemRepository.save(pedidoItem);
             }
             
-            // Recargar pedido con items para devolverlo completo
-            savedPedido = pedidoRepository.findById(savedPedido.getId_pedido()).get();
+            // Convertir a DTO para la respuesta
+            PedidoDTO responseDTO = convertToDTO(savedPedido);
             
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of(
                         "message", "Pedido creado exitosamente",
-                        "pedido", savedPedido
+                        "pedido", responseDTO
                     ));
                     
         } catch (Exception e) {
@@ -196,107 +328,16 @@ public class PedidoController {
             pedido.setEstado(estado.toUpperCase());
             Pedido updatedPedido = pedidoRepository.save(pedido);
             
+            PedidoDTO pedidoDTO = new PedidoDTO(updatedPedido);
+            
             return ResponseEntity.ok(Map.of(
                 "message", "Estado del pedido actualizado",
-                "pedido", updatedPedido
+                "pedido", pedidoDTO
             ));
             
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "Error al actualizar estado: " + e.getMessage()));
-        }
-    }
-
-    // Actualizar información del pedido
-    @PutMapping("/{id}")
-    @Operation(summary = "Actualizar pedido", description = "Actualiza la información de un pedido existente")
-    public ResponseEntity<?> updatePedido(@PathVariable Long id, @RequestBody Pedido pedidoDetails) {
-        try {
-            Optional<Pedido> pedidoOpt = pedidoRepository.findById(id);
-            if (!pedidoOpt.isPresent()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "Pedido no encontrado"));
-            }
-            
-            Pedido pedido = pedidoOpt.get();
-            
-            // Actualizar campos permitidos
-            if (pedidoDetails.getDireccionEnvio() != null) {
-                pedido.setDireccionEnvio(pedidoDetails.getDireccionEnvio());
-            }
-            
-            if (pedidoDetails.getTotal() != null) {
-                pedido.setTotal(pedidoDetails.getTotal());
-            }
-            
-            Pedido updatedPedido = pedidoRepository.save(pedido);
-            
-            return ResponseEntity.ok(Map.of(
-                "message", "Pedido actualizado exitosamente",
-                "pedido", updatedPedido
-            ));
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Error al actualizar pedido: " + e.getMessage()));
-        }
-    }
-
-    // Eliminar pedido
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar pedido", description = "Elimina un pedido existente")
-    public ResponseEntity<?> deletePedido(@PathVariable Long id) {
-        try {
-            Optional<Pedido> pedidoOpt = pedidoRepository.findById(id);
-            if (!pedidoOpt.isPresent()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "Pedido no encontrado"));
-            }
-            
-            Pedido pedido = pedidoOpt.get();
-            
-            // Si el pedido no está cancelado, devolver stock
-            if (!"CANCELADO".equalsIgnoreCase(pedido.getEstado())) {
-                devolverStockPedido(pedido);
-            }
-            
-            // Eliminar items del pedido
-            List<PedidoItem> items = pedidoItemRepository.findByPedidoId(id);
-            pedidoItemRepository.deleteAll(items);
-            
-            // Eliminar pedido
-            pedidoRepository.delete(pedido);
-            
-            return ResponseEntity.ok(Map.of(
-                "message", "Pedido eliminado exitosamente"
-            ));
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Error al eliminar pedido: " + e.getMessage()));
-        }
-    }
-
-    // Obtener estadísticas de pedidos
-    @GetMapping("/estadisticas")
-    @Operation(summary = "Obtener estadísticas", description = "Retorna estadísticas sobre los pedidos")
-    public ResponseEntity<?> getEstadisticas() {
-        try {
-            long totalPedidos = pedidoRepository.count();
-            long pedidosPendientes = pedidoRepository.findByEstado("PENDIENTE").size();
-            long pedidosEntregados = pedidoRepository.findByEstado("ENTREGADO").size();
-            long pedidosCancelados = pedidoRepository.findByEstado("CANCELADO").size();
-            
-            return ResponseEntity.ok(Map.of(
-                "totalPedidos", totalPedidos,
-                "pendientes", pedidosPendientes,
-                "entregados", pedidosEntregados,
-                "cancelados", pedidosCancelados
-            ));
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al obtener estadísticas"));
         }
     }
 
@@ -307,40 +348,49 @@ public class PedidoController {
         try {
             List<PedidoItem> items = pedidoItemRepository.findByPedidoId(id);
             
-            // Enriquecer items con información del producto
-            List<Map<String,? extends Object>> itemsEnriquecidos = items.stream().map(item -> {
-                Map<String, Object> itemMap = Map.of(
-                    "id_item", item.getId_item(),
-                    "productoId", item.getProductoId(),
-                    "cantidad", item.getCantidad(),
-                    "precioUnitario", item.getPrecioUnitario(),
-                    "subtotal", item.getSubtotal()
-                );
+            List<PedidoItemDTO> itemsDTO = items.stream().map(item -> {
+                PedidoItemDTO dto = new PedidoItemDTO(item);
                 
-                // Obtener información del producto
+                // Agregar información adicional del producto
                 Optional<Product> producto = productRepository.findById(item.getProductoId());
                 if (producto.isPresent()) {
                     Product p = producto.get();
-                    return Map.of(
-                        "id_item", item.getId_item(),
-                        "productoId", item.getProductoId(),
-                        "productoNombre", p.getNombre(),
-                        "productoCategoria", p.getCat(),
-                        "cantidad", item.getCantidad(),
-                        "precioUnitario", item.getPrecioUnitario(),
-                        "subtotal", item.getSubtotal(),
-                        "productoImagen", p.getDetail() // Asumiendo que detail podría ser una URL de imagen
-                    );
+                    dto.setProductoNombre(p.getNombre());
                 }
-                return itemMap;
+                
+                return dto;
             }).collect(Collectors.toList());
             
-            return ResponseEntity.ok(itemsEnriquecidos);
+            return ResponseEntity.ok(itemsDTO);
             
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "Error al obtener items: " + e.getMessage()));
         }
+    }
+
+    // Método auxiliar para convertir Pedido a DTO con items
+    private PedidoDTO convertToDTO(Pedido pedido) {
+        PedidoDTO dto = new PedidoDTO(pedido);
+        
+        // Cargar items si es necesario
+        List<PedidoItem> items = pedidoItemRepository.findByPedidoId(pedido.getId_pedido());
+        List<PedidoItemDTO> itemsDTO = items.stream()
+            .map(item -> {
+                PedidoItemDTO itemDTO = new PedidoItemDTO(item);
+                
+                // Agregar nombre del producto
+                Optional<Product> producto = productRepository.findById(item.getProductoId());
+                if (producto.isPresent()) {
+                    itemDTO.setProductoNombre(producto.get().getNombre());
+                }
+                
+                return itemDTO;
+            })
+            .collect(Collectors.toList());
+        
+        dto.setItems(itemsDTO);
+        return dto;
     }
 
     // Método auxiliar para devolver stock
